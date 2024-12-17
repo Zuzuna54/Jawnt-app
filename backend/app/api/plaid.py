@@ -9,6 +9,9 @@ from app.core.exceptions import PlaidIntegrationError
 
 router = APIRouter()
 
+class CreateLinkTokenRequest(BaseModel):
+    user_id: str
+
 class CreateLinkTokenResponse(BaseModel):
     link_token: str
 
@@ -31,9 +34,9 @@ class ExchangePublicTokenResponse(BaseModel):
     within 30 minutes of creation.
     """
 )
-async def create_link_token(user_id: str):
+async def create_link_token(request: CreateLinkTokenRequest):
     try:
-        link_token = plaid_service.create_link_token(user_id)
+        link_token = plaid_service.create_link_token(request.user_id)
         return {"link_token": link_token}
     except Exception as e:
         raise PlaidIntegrationError(str(e))
