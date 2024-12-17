@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 class Settings(BaseSettings):
@@ -15,9 +15,10 @@ class Settings(BaseSettings):
     PLAID_SECRET: str = "386a94d4b632d57fe91b7b0f8506b3"
     PLAID_ENV: str = "sandbox"
     
-    class Config:
-        case_sensitive = True
-        env_file = ".env"
+    model_config = SettingsConfigDict(
+        case_sensitive=True,
+        env_file=".env"
+    )
 
 @lru_cache()
 def get_settings() -> Settings:

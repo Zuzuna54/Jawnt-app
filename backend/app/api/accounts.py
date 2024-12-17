@@ -27,7 +27,12 @@ router = APIRouter()
     """
 )
 async def create_internal_account(account: InternalAccountCreate):
-    db_account = InternalOrganizationBankAccount(**account.dict())
+    db_account = InternalOrganizationBankAccount(
+        type=account.type,
+        account_number=account.account_number,
+        routing_number=account.routing_number,
+        organization_id=account.organization_id
+    )
     created_account = db.internal_accounts.create(db_account)
     message_queue.publish(ACCOUNT_CREATED, {"account_id": created_account.id, "type": "internal"})
     return created_account
@@ -85,7 +90,14 @@ async def delete_internal_account(account_id: int):
     """
 )
 async def create_external_account(account: ExternalAccountCreate):
-    db_account = ExternalOrganizationBankAccount(**account.dict())
+    db_account = ExternalOrganizationBankAccount(
+        plaid_account_id=account.plaid_account_id,
+        account_number=account.account_number,
+        routing_number=account.routing_number,
+        organization_id=account.organization_id,
+        bank_name=account.bank_name,
+        account_type=account.account_type
+    )
     created_account = db.external_accounts.create(db_account)
     message_queue.publish(ACCOUNT_CREATED, {"account_id": created_account.id, "type": "external"})
     return created_account
