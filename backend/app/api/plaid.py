@@ -61,14 +61,14 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
         # Create external accounts for each Plaid account
         created_accounts = []
         for account in plaid_data['accounts']:
-            if account.type in ['checking', 'savings']:
+            if account['type'] in ['checking', 'savings']:
                 external_account = ExternalOrganizationBankAccount(
-                    plaid_account_id=account.account_id,
-                    account_number=int(account.mask) if account.mask else 0,  # In real app, get from auth endpoint
+                    plaid_account_id=account['account_id'],
+                    account_number=int(account['mask']) if account.get('mask') else 0,  # In real app, get from auth endpoint
                     routing_number=0,  # In real app, get from auth endpoint
                     organization_id=request.organization_id,
-                    bank_name=account.name,
-                    account_type=account.type
+                    bank_name=account['name'],
+                    account_type=account['type']
                 )
                 created_account = db.external_accounts.create(external_account)
                 created_accounts.append(created_account)

@@ -51,14 +51,17 @@ class PlaidService:
                 public_token=public_token
             )
             
-            response = self.client.item_public_token_exchange(exchange_request)
-            access_token = response['access_token']
+            exchange_response = self.client.item_public_token_exchange(exchange_request)
+            access_token = exchange_response['access_token']
             
             # Get account details
-            account_response = self.client.accounts_get(access_token)
+            accounts_response = self.client.accounts_get({
+                'access_token': access_token
+            })
+            
             return {
                 'access_token': access_token,
-                'accounts': account_response['accounts']
+                'accounts': accounts_response['accounts']
             }
         except Exception as e:
             raise PlaidIntegrationError(f"Failed to exchange public token: {str(e)}")
