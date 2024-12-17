@@ -17,10 +17,11 @@ app.add_middleware(
 )
 
 # Import and include routers
-from app.api import accounts, payments
+from app.api import accounts, payments, plaid
 
 app.include_router(accounts.router, prefix="/api/v1", tags=["accounts"])
 app.include_router(payments.router, prefix="/api/v1", tags=["payments"])
+app.include_router(plaid.router, prefix="/api/v1", tags=["plaid"])
 
 @app.get("/")
 async def root():

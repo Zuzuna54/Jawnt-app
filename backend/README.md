@@ -57,6 +57,11 @@ Once the server is running, visit:
 - `GET /api/v1/payments/{payment_id}/status` - Check payment status
 - `GET /api/v1/payments` - List all payments (Org Admin)
 
+#### Plaid Integration
+
+- `POST /api/v1/plaid/create-link-token` - Create Plaid Link token
+- `POST /api/v1/plaid/exchange-token` - Exchange public token and create external account
+
 ## Testing
 
 Run tests using pytest:
@@ -72,3 +77,15 @@ pytest
 - `app/services/` - Business logic and services
 - `app/schemas/` - Request/Response schemas
 - `lib/jawnt/` - Payment processing client code
+
+## Plaid Integration
+
+The application uses Plaid's Sandbox environment for testing:
+
+- Client ID: 6758563294bbe4001b5c5279
+- Secret: 386a94d4b632d57fe91b7b0f8506b3
+
+For testing, you can use Plaid's Sandbox credentials:
+
+- Username: user_good
+- Password: pass_good
