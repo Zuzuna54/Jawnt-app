@@ -22,8 +22,8 @@ export default function AccountsPage() {
     const fetchAccounts = async () => {
         try {
             const [externalRes, internalRes] = await Promise.all([
-                axios.get('http://localhost:8001/api/v1/external-accounts'),
-                axios.get('http://localhost:8001/api/v1/internal-accounts')
+                axios.get('/api/v1/external-accounts'),
+                axios.get('/api/v1/internal-accounts')
             ]);
             setExternalAccounts(externalRes.data);
             setInternalAccounts(internalRes.data);

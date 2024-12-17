@@ -16,14 +16,16 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={inter.className}>
+        <html lang="en" suppressHydrationWarning>
+            <body className={inter.className} suppressHydrationWarning>
                 <nav className="bg-white shadow-sm">
                     <div className="container mx-auto px-4">
                         <div className="flex justify-between h-16">
                             <div className="flex">
                                 <div className="flex-shrink-0 flex items-center">
-                                    <span className="text-xl font-bold text-blue-600">Jawnt</span>
+                                    <Link href="/" className="text-xl font-bold text-blue-600">
+                                        Jawnt
+                                    </Link>
                                 </div>
                                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                                     <Link

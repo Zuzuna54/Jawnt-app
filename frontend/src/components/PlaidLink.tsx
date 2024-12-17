@@ -14,7 +14,7 @@ export function PlaidLink({ organizationId, onSuccess, onExit }: PlaidLinkProps)
     // Get link token when component mounts
     const generateToken = useCallback(async () => {
         try {
-            const response = await axios.post('http://localhost:8001/api/v1/plaid/create-link-token', {
+            const response = await axios.post('/api/v1/plaid/create-link-token', {
                 user_id: 'test_user' // In a real app, this would be the actual user ID
             });
             setLinkToken(response.data.link_token);
@@ -25,7 +25,7 @@ export function PlaidLink({ organizationId, onSuccess, onExit }: PlaidLinkProps)
 
     const onPlaidSuccess = useCallback(async (publicToken: string) => {
         try {
-            await axios.post('http://localhost:8001/api/v1/plaid/exchange-token', {
+            await axios.post('/api/v1/plaid/exchange-token', {
                 public_token: publicToken,
                 organization_id: organizationId
             });

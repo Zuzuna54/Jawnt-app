@@ -22,7 +22,7 @@ export default function PaymentsPage() {
 
     const fetchPayments = async () => {
         try {
-            const response = await axios.get('http://localhost:8001/api/v1/payments');
+            const response = await axios.get('/api/v1/payments');
             setPayments(response.data);
         } catch (error) {
             console.error('Error fetching payments:', error);

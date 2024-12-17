@@ -1,36 +1,67 @@
 # Technical Assessment Requirements
 
-## Core Concepts to Demonstrate
+## Core Concepts Progress
 
-- [ ] Next.js fundamentals (components, pages, etc)
-- [ ] Styling fundamentals (flex, flexbox, etc)
-- [x] Data fundamentals (databases, queues)
-  - Implemented in-memory database with hashmaps
-  - Implemented message queue system
-- [x] REST fundamentals (GET, POST, PATCH, PUT)
-  - Implemented all required REST endpoints
-- [x] Domain logic fundamentals
-  - Implemented core banking domain models
-  - Proper separation of concerns
-- [ ] Testing fundamentals
+### ✅ Data Fundamentals
 
-## Backend Requirements (✓ Completed)
+- [x] In-memory database using hashmaps
+- [x] Message queue system for events
+- [x] Domain models with proper typing
+
+### ✅ REST Fundamentals
+
+- [x] GET endpoints for listing resources
+- [x] POST endpoints for creating resources
+- [x] PATCH endpoints for updating resources
+- [x] DELETE endpoints for removing resources
+
+### ✅ Domain Logic Fundamentals
+
+- [x] Core banking domain models
+- [x] Proper separation of concerns
+- [x] Clean architecture with services
+
+### ❌ Next.js Fundamentals (Not Started)
+
+- [ ] Components structure
+- [ ] Pages organization
+- [ ] TypeScript integration
+- [ ] Plaid Link integration
+
+### ❌ Styling Fundamentals (Not Started)
+
+- [ ] Flexbox layouts
+- [ ] Responsive design
+- [ ] Modern UI components
+
+### ❌ Testing Fundamentals (Not Started)
+
+- [ ] Backend unit tests
+- [ ] API integration tests
+- [ ] Frontend component tests
+
+## Backend Progress (✅ Completed)
 
 ### Setup and Structure
 
 - [x] FastAPI project setup
-- [x] Python type hints throughout the codebase
-- [x] In-memory database using hashmaps
+- [x] Python type hints throughout
+- [x] Project structure with proper separation
+- [x] Environment configuration
+
+### Data Layer
+
+- [x] In-memory database implementation
 - [x] Message queue system
-- [x] Project structure with proper separation of concerns
+- [x] Event publishing
 
 ### Models
 
-- [x] SuperUser model
-- [x] OrganizationAdministrator model
-- [x] InternalOrganizationBankAccount model
-- [x] ExternalOrganizationBankAccount model
-- [x] Payment model
+- [x] SuperUser
+- [x] OrganizationAdministrator
+- [x] InternalOrganizationBankAccount
+- [x] ExternalOrganizationBankAccount
+- [x] Payment
 
 ### API Endpoints
 
@@ -44,16 +75,16 @@
 
 ### Plaid Integration
 
-- [x] Plaid Link setup
+- [x] Plaid service setup
 - [x] Create link token endpoint
 - [x] Exchange public token endpoint
 - [x] Account creation from Plaid data
 
-## Frontend Requirements (Pending)
+## Frontend Requirements (❌ Not Started)
 
 ### Setup
 
-- [ ] Next.js with TypeScript setup
+- [ ] Next.js with TypeScript
 - [ ] Pages Router implementation
 - [ ] Project structure setup
 
@@ -70,33 +101,56 @@
 - [ ] Responsive design
 - [ ] Flexbox/Grid layouts
 
-## Testing Requirements
+## Testing Requirements (❌ Not Started)
 
-- [ ] Backend unit tests
-- [ ] Frontend component tests
+### Backend Tests
+
+- [ ] Unit tests for payment processing
+- [ ] API endpoint integration tests
+- [ ] Message queue tests
+
+### Frontend Tests
+
+- [ ] Component tests
 - [ ] Integration tests
-- [ ] Payment processing tests
+- [ ] E2E tests for critical flows
 
 ## Documentation
 
-- [x] Backend README with setup instructions
-- [x] API documentation
-- [ ] Frontend README
+### ✅ Backend
+
+- [x] README with setup instructions
+- [x] API documentation with FastAPI Swagger
 - [x] Environment variables documentation
 
-## Repository Management
+### ❌ Frontend
 
-- [x] GitHub repository setup
-- [x] Proper commit history with descriptive messages
-- [x] Add team members as viewers:
-  - [x] kaleb@jawntpass.com
-  - [x] garrett@jawntpass.com
-  - [x] nolan@jawntpass.com
-  - [x] allie@jawntpass.com
+- [ ] README with setup instructions
+- [ ] Component documentation
+- [ ] State management documentation
 
-## Notes
+## Next Steps Priority:
 
-- Authentication/Authorization can be skipped (not required for assessment)
-- Focus on demonstrating understanding of concepts
-- Time management is important (Frontend: 60min, Backend: 90min)
-- Comments can be used to "handwave" non-critical features
+1. Frontend Setup (10 minutes)
+
+   - Set up Next.js with TypeScript
+   - Configure project structure
+   - Set up basic routing
+
+2. Plaid Link Integration (30 minutes)
+
+   - Implement Plaid Link component
+   - Connect with backend endpoints
+   - Handle account creation flow
+
+3. UI Implementation (20 minutes)
+
+   - Create responsive layouts
+   - Implement modern styling
+   - Build reusable components
+
+4. Testing (15 minutes)
+   - Add critical backend tests
+   - Add essential frontend tests
+
+Would you like to start with the frontend setup?
