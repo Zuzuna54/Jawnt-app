@@ -11,25 +11,30 @@ interface PlaidLinkProps {
 export function PlaidLink({ organizationId, onSuccess, onExit }: PlaidLinkProps) {
     const [linkToken, setLinkToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Get link token when component mounts
     const generateToken = useCallback(async () => {
         try {
+            setIsLoading(true);
+            setError(null);
             console.log('Generating Plaid link token...');
             const response = await axios.post('/api/v1/plaid/create-link-token', {
                 user_id: 'test_user'
             });
             console.log('Link token generated:', response.data);
             setLinkToken(response.data.link_token);
-            setError(null);
         } catch (error) {
             console.error('Error generating link token:', error);
             setError('Failed to initialize Plaid Link');
+        } finally {
+            setIsLoading(false);
         }
     }, []);
 
     const onPlaidSuccess = useCallback(async (publicToken: string) => {
         try {
+            setIsLoading(true);
+            setError(null);
             console.log('Exchanging public token...');
             await axios.post('/api/v1/plaid/exchange-token', {
                 public_token: publicToken,
@@ -37,14 +42,14 @@ export function PlaidLink({ organizationId, onSuccess, onExit }: PlaidLinkProps)
             });
             console.log('Token exchanged successfully');
             onSuccess();
-            setError(null);
         } catch (error) {
             console.error('Error exchanging token:', error);
             setError('Failed to link bank account');
+        } finally {
+            setIsLoading(false);
         }
     }, [organizationId, onSuccess]);
 
-    // Generate token on mount
     useEffect(() => {
         if (!linkToken) {
             generateToken();
@@ -68,14 +73,15 @@ export function PlaidLink({ organizationId, onSuccess, onExit }: PlaidLinkProps)
 
     if (error) {
         return (
-            <div>
+            <div className="space-y-4">
                 <button
                     onClick={generateToken}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                    disabled={isLoading}
+                    className="btn btn-secondary"
                 >
-                    Retry Connection
+                    {isLoading ? 'Retrying...' : 'Retry Connection'}
                 </button>
-                <p className="mt-2 text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-600">{error}</p>
             </div>
         );
     }
@@ -89,10 +95,20 @@ export function PlaidLink({ organizationId, onSuccess, onExit }: PlaidLinkProps)
                     open();
                 }
             }}
-            disabled={!ready}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            disabled={!ready || isLoading}
+            className="btn btn-primary"
         >
-            Connect Bank Account
+            {isLoading ? (
+                <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Connecting...
+                </span>
+            ) : (
+                'Connect Bank Account'
+            )}
         </button>
     );
 } 

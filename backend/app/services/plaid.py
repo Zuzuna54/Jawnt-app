@@ -6,6 +6,7 @@ from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUse
 from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+import time
 
 from app.core.config import settings
 from app.core.exceptions import PlaidIntegrationError
@@ -54,14 +55,36 @@ class PlaidService:
             exchange_response = self.client.item_public_token_exchange(exchange_request)
             access_token = exchange_response['access_token']
             
+            # Store access token in memory (in production this should be encrypted and stored in a secure database)
+            if not hasattr(self, 'access_tokens'):
+                self.access_tokens = {}
+            self.access_tokens[access_token] = {
+                'created_at': time.time(),
+                'item_id': exchange_response['item_id']
+            }
+            
             # Get account details
             accounts_response = self.client.accounts_get({
                 'access_token': access_token
             })
             
+            # Get auth details for account and routing numbers
+            auth_response = self.client.auth_get({
+                'access_token': access_token
+            })
+            
+            # Combine account and auth data
+            accounts = accounts_response['accounts']
+            for account in accounts:
+                for auth_account in auth_response['numbers']['ach']:
+                    if account['account_id'] == auth_account['account_id']:
+                        account['account_number'] = auth_account['account']
+                        account['routing_number'] = auth_account['routing']
+                        break
+            
             return {
                 'access_token': access_token,
-                'accounts': accounts_response['accounts']
+                'accounts': accounts
             }
         except Exception as e:
             raise PlaidIntegrationError(f"Failed to exchange public token: {str(e)}")

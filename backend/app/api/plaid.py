@@ -62,20 +62,40 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
         created_accounts = []
         for account in plaid_data['accounts']:
             if account['type'] in ['checking', 'savings']:
-                external_account = ExternalOrganizationBankAccount(
-                    plaid_account_id=account['account_id'],
-                    account_number=int(account['mask']) if account.get('mask') else 0,  # In real app, get from auth endpoint
-                    routing_number=0,  # In real app, get from auth endpoint
-                    organization_id=request.organization_id,
-                    bank_name=account['name'],
-                    account_type=account['type']
-                )
-                created_account = db.external_accounts.create(external_account)
-                created_accounts.append(created_account)
+                try:
+                    external_account = ExternalOrganizationBankAccount(
+                        plaid_account_id=account['account_id'],
+                        account_number=account.get('account_number', 0),
+                        routing_number=account.get('routing_number', 0),
+                        organization_id=request.organization_id,
+                        bank_name=account.get('name', 'Unknown Bank'),
+                        account_type=account['type']
+                    )
+                    created_account = db.external_accounts.create(external_account)
+                    if created_account:
+                        created_accounts.append(created_account)
+                    else:
+                        raise HTTPException(
+                            status_code=500,
+                            detail=f"Failed to create external account for {account['account_id']}"
+                        )
+                except Exception as e:
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"Error creating external account: {str(e)}"
+                    )
+        
+        if not created_accounts:
+            raise HTTPException(
+                status_code=400,
+                detail="No eligible checking or savings accounts found"
+            )
         
         return {
-            "message": "Accounts linked successfully",
+            "message": f"Successfully linked {len(created_accounts)} accounts",
             "accounts": created_accounts
         }
+    except PlaidIntegrationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise PlaidIntegrationError(str(e)) 
+        raise HTTPException(status_code=500, detail=str(e)) 
