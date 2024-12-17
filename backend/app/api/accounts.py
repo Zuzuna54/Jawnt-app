@@ -74,8 +74,19 @@ async def update_internal_account(account_id: int, account_update: InternalAccou
     description="Delete an internal organization bank account by its ID."
 )
 async def delete_internal_account(account_id: int):
-    if not db.internal_accounts.delete(account_id):
+    # First check if account exists
+    existing_account = db.internal_accounts.get(account_id)
+    if not existing_account:
         raise HTTPException(status_code=404, detail="Account not found")
+    
+    # Then attempt to delete it
+    if not db.internal_accounts.delete(account_id):
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to delete account"
+        )
+    
+    return None  # 204 No Content
 
 @router.post(
     "/external-accounts",

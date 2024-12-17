@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException # type: ignore
-from pydantic import BaseModel # type: ignore
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel
 from typing import Dict, Any, List
 
 from app.services.plaid import plaid_service
@@ -58,8 +58,12 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
         print(f"Received exchange token request for organization {request.organization_id}")
         
         # Exchange token and get account data
-        plaid_data = plaid_service.exchange_public_token(request.public_token)
-        print(f"Successfully retrieved Plaid data with {len(plaid_data['accounts'])} accounts")
+        try:
+            plaid_data = plaid_service.exchange_public_token(request.public_token)
+            print(f"Successfully retrieved Plaid data with {len(plaid_data['accounts'])} accounts")
+        except Exception as e:
+            print(f"✗ Plaid token exchange failed: {str(e)}")
+            raise PlaidIntegrationError(str(e))
         
         # Create external accounts for each Plaid account
         created_accounts = []
@@ -114,14 +118,14 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
                     else:
                         print(f"✗ Failed to create account in database: {account_id}")
                         raise HTTPException(
-                            status_code=500,
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Failed to create external account for {account_id}"
                         )
                 except ValueError as e:
                     print(f"✗ Value error processing account: {str(e)}")
                     print(f"Account data that caused error: {account}")
                     raise HTTPException(
-                        status_code=400,
+                        status_code=status.HTTP_400_BAD_REQUEST,
                         detail=f"Invalid account data: {str(e)}"
                     )
                 except Exception as e:
@@ -130,7 +134,7 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
                     import traceback
                     print(f"Traceback: {traceback.format_exc()}")
                     raise HTTPException(
-                        status_code=500,
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail=f"Error creating external account: {str(e)}"
                     )
             else:
@@ -140,7 +144,7 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
             print("\nNo eligible accounts found in Plaid response")
             print(f"Account types received: {[(acc.get('type'), acc.get('subtype')) for acc in plaid_data['accounts']]}")
             raise HTTPException(
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No eligible checking or savings accounts found"
             )
         
@@ -151,13 +155,18 @@ async def exchange_public_token(request: ExchangePublicTokenRequest):
         }
     except PlaidIntegrationError as e:
         print(f"✗ Plaid integration error: {str(e)}")
-        raise HTTPException(status_code=502, detail=str(e))
-    except ValueError as e:
-        print(f"✗ Value error: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=str(e)
+        )
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"✗ Unexpected error: {str(e)}")
         print(f"Error type: {type(e)}")
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        ) 

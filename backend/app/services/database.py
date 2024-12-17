@@ -29,18 +29,26 @@ class InMemoryDB(Generic[T]):
 
     def update(self, id: int, item: T) -> Optional[T]:
         if id in self._data:
+            item.id = id  # Ensure ID is preserved
             self._data[id] = item
             return item
         return None
 
     def delete(self, id: int) -> bool:
-        if id in self._data:
+        """Delete an item from the database by ID"""
+        try:
             del self._data[id]
             return True
-        return False
+        except KeyError:
+            return False
+
+    def clear(self) -> None:
+        """Clear all data from the database"""
+        self._data.clear()
+        self._counter = 1
 
 class Database:
-    def __init__(self):
+    def __init__(self, auto_seed: bool = True):
         # Initialize all collections
         self.super_users = InMemoryDB[SuperUser]()
         self.org_admins = InMemoryDB[OrganizationAdministrator]()
@@ -48,11 +56,13 @@ class Database:
         self.external_accounts = InMemoryDB[ExternalOrganizationBankAccount]()
         self.payments = InMemoryDB[Payment]()
         
-        # Add seed data
-        self._seed_data()
+        # Add seed data if auto_seed is True
+        if auto_seed:
+            self._seed_data()
 
     def _seed_data(self):
-        # Seed internal accounts if empty
+        """Seed the database with initial data"""
+        # Only seed if collections are empty
         if not self.internal_accounts.list():
             funding_account = InternalOrganizationBankAccount(
                 type="funding",
@@ -69,7 +79,6 @@ class Database:
             self.internal_accounts.create(funding_account)
             self.internal_accounts.create(claims_account)
 
-        # Seed external accounts if empty
         if not self.external_accounts.list():
             chase_account = ExternalOrganizationBankAccount(
                 plaid_account_id="chase_checking_1",
@@ -90,7 +99,6 @@ class Database:
             self.external_accounts.create(chase_account)
             self.external_accounts.create(wells_fargo_account)
 
-        # Seed a super user if empty
         if not self.super_users.list():
             super_user = SuperUser(
                 first_name="Admin",
@@ -98,7 +106,6 @@ class Database:
             )
             self.super_users.create(super_user)
 
-        # Seed an org admin if empty
         if not self.org_admins.list():
             org_admin = OrganizationAdministrator(
                 first_name="Org",
@@ -107,7 +114,6 @@ class Database:
             )
             self.org_admins.create(org_admin)
 
-        # Seed some payments if empty
         if not self.payments.list():
             payment1 = Payment(
                 source_routing_number=444555666,
