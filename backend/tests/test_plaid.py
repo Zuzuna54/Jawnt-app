@@ -1,6 +1,6 @@
-import pytest
-from unittest.mock import patch, MagicMock
-from fastapi import status
+import pytest # type: ignore
+from unittest.mock import patch, MagicMock # type: ignore
+from fastapi import status # type: ignore
 
 def test_create_link_token(client):
     """Test creating a Plaid link token"""

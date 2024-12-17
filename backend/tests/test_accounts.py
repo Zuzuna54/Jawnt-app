@@ -1,6 +1,6 @@
-import pytest
-from fastapi import status
-from app.schemas.accounts import InternalAccountCreate, InternalAccountUpdate
+import pytest # type: ignore    
+from fastapi import status # type: ignore
+from app.schemas.accounts import InternalAccountCreate, InternalAccountUpdate # type: ignore
 
 def test_create_internal_account(client, test_db, sample_internal_account):
     """Test creating an internal account"""

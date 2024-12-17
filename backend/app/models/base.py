@@ -6,15 +6,6 @@ class BaseDBModel(BaseModel):
     id: Optional[int] = None
     uuid: UUID = Field(default_factory=uuid4)
 
-class SuperUser(BaseDBModel):
-    first_name: str
-    last_name: str
-
-class OrganizationAdministrator(BaseDBModel):
-    first_name: str
-    last_name: str
-    organization_id: int
-
 class InternalOrganizationBankAccount(BaseDBModel):
     type: Literal["funding", "claims"]
     account_number: int
@@ -34,7 +25,7 @@ class Payment(BaseDBModel):
     destination_routing_number: int
     amount: int  # Amount in cents
     status: Literal["PENDING", "SUCCESS", "FAILURE"] = "PENDING"
-    payment_type: Literal["ACH_DEBIT", "ACH_CREDIT"]
+    payment_type: Literal["ACH_DEBIT", "ACH_CREDIT", "BOOK"]
     source_account_id: Union[str, int]  # Can be either internal or external account
     destination_account_id: Union[str, int]  # Can be either internal or external account
     idempotency_key: str

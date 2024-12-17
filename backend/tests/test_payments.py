@@ -1,8 +1,8 @@
-import pytest
-from unittest.mock import patch
-from fastapi import status
-from lib.jawnt.client import PaymentStatus, PaymentResponse
-import uuid
+import pytest # type: ignore    
+from unittest.mock import patch # type: ignore
+from fastapi import status # type: ignore
+from lib.jawnt.client import PaymentStatus, PaymentResponse # type: ignore
+import uuid # type: ignore
 
 def test_create_ach_debit_payment(client, test_db, sample_payment):
     """Test creating an ACH debit payment"""

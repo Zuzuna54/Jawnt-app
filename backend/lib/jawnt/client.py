@@ -64,6 +64,23 @@ def perform_ach_credit(
         amount=amount,
     )
 
+def perform_book_payment(
+    internal_account_id: str,
+    external_account_id: str,
+    amount: int,
+    idempotency_key: str,
+) -> PaymentResponse:
+    """
+    Amount represents the amount in cents
+    e.g $50.00 = 5000
+    """
+    return external_call(
+        internal_account_id,
+        external_account_id,
+        idempotency_key,
+        amount=amount,
+    )
+
 def get_payment_status(payment_id: str) -> PaymentStatus:  # pylint: disable=unused-argument
     long_external_call()
     return PaymentStatus.SUCCESS if randint(1, 2) == 1 else PaymentStatus.FAILURE 

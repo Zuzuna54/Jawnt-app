@@ -1,8 +1,6 @@
 from typing import Dict, List, Optional, TypeVar, Generic, Type
 from pydantic import BaseModel # type: ignore
 from app.models.base import (
-    SuperUser,
-    OrganizationAdministrator,
     InternalOrganizationBankAccount,
     ExternalOrganizationBankAccount,
     Payment
@@ -50,8 +48,6 @@ class InMemoryDB(Generic[T]):
 class Database:
     def __init__(self, auto_seed: bool = True):
         # Initialize all collections
-        self.super_users = InMemoryDB[SuperUser]()
-        self.org_admins = InMemoryDB[OrganizationAdministrator]()
         self.internal_accounts = InMemoryDB[InternalOrganizationBankAccount]()
         self.external_accounts = InMemoryDB[ExternalOrganizationBankAccount]()
         self.payments = InMemoryDB[Payment]()
@@ -98,21 +94,6 @@ class Database:
             )
             self.external_accounts.create(chase_account)
             self.external_accounts.create(wells_fargo_account)
-
-        if not self.super_users.list():
-            super_user = SuperUser(
-                first_name="Admin",
-                last_name="User"
-            )
-            self.super_users.create(super_user)
-
-        if not self.org_admins.list():
-            org_admin = OrganizationAdministrator(
-                first_name="Org",
-                last_name="Admin",
-                organization_id=1
-            )
-            self.org_admins.create(org_admin)
 
         if not self.payments.list():
             payment1 = Payment(

@@ -1,8 +1,8 @@
-import pytest
-from fastapi.testclient import TestClient
-from app.main import app
-from app.services.database import Database, db
-from app.models.base import InternalOrganizationBankAccount, ExternalOrganizationBankAccount, Payment
+import pytest # type: ignore
+from fastapi.testclient import TestClient # type: ignore
+from app.main import app # type: ignore
+from app.services.database import Database, db # type: ignore
+from app.models.base import InternalOrganizationBankAccount, ExternalOrganizationBankAccount, Payment # type: ignore
 
 @pytest.fixture
 def client():

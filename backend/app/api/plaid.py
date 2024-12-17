@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, status # type: ignore
+from pydantic import BaseModel # type: ignore
 from typing import Dict, Any, List
 
 from app.services.plaid import plaid_service
