@@ -3,19 +3,76 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary brand color - a professional blue */
+  --primary: #0066f5;
+  --primary-hover: #0052cc;
+
+  /* Background colors */
+  --background: #f7f9fc;
+  --card-bg: #ffffff;
+
+  /* Text colors */
+  --foreground: #1a2b4b;
+  --muted: #64748b;
+
+  /* Border and accent colors */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --card-bg: #1e293b;
+    --foreground: #f8fafc;
+    --muted: #94a3b8;
+    --border: #2d3b55;
+    --border-light: #1e293b;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] 
+           shadow-sm hover:shadow disabled:hover:bg-[var(--primary)];
+  }
+
+  .btn-secondary {
+    @apply bg-white text-[var(--foreground)] border border-[var(--border)]
+           hover:bg-[var(--border-light)] shadow-sm;
+  }
+
+  .card {
+    @apply p-6 bg-[var(--card-bg)] border border-[var(--border)] rounded-lg shadow-sm;
+  }
+
+  .nav-link {
+    @apply text-[var(--muted)] hover:text-[var(--foreground)] transition-colors;
+  }
+
+  .badge {
+    @apply px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-blue {
+    @apply bg-blue-50 text-blue-700;
+  }
+
+  .badge-green {
+    @apply bg-green-50 text-green-700;
+  }
 }
