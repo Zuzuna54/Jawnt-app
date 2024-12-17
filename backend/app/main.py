@@ -1,8 +1,8 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.api import accounts, payments, plaid
-from app.core.config import settings
-import uvicorn
+from fastapi import FastAPI # type: ignore
+from fastapi.middleware.cors import CORSMiddleware # type: ignore
+from app.api import accounts, payments, plaid # type: ignore
+from app.core.config import settings # type: ignore
+import uvicorn # type: ignore
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

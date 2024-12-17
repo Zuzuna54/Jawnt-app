@@ -1,6 +1,6 @@
 from typing import Dict, List, Literal, Optional, Union
-from uuid import UUID, uuid4
-from pydantic import BaseModel, Field
+from uuid import UUID, uuid4 # type: ignore
+from pydantic import BaseModel, Field # type: ignore    
 
 class BaseDBModel(BaseModel):
     id: Optional[int] = None

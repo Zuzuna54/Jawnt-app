@@ -1,11 +1,11 @@
 from typing import Dict, Any
-import plaid
-from plaid.api import plaid_api
-from plaid.model.link_token_create_request import LinkTokenCreateRequest
-from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
-from plaid.model.products import Products
-from plaid.model.country_code import CountryCode
-from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+import plaid # type: ignore
+from plaid.api import plaid_api # type: ignore  
+from plaid.model.link_token_create_request import LinkTokenCreateRequest # type: ignore
+from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser # type: ignore
+from plaid.model.products import Products # type: ignore
+from plaid.model.country_code import CountryCode # type: ignore
+from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest # type: ignore
 import time
 
 from app.core.config import settings

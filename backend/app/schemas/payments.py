@@ -1,5 +1,5 @@
 from typing import Literal, Union
-from pydantic import BaseModel
+from pydantic import BaseModel # type: ignore
 from uuid import UUID
 
 class PaymentCreate(BaseModel):

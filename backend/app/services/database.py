@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, TypeVar, Generic, Type
-from pydantic import BaseModel
+from pydantic import BaseModel # type: ignore
 from app.models.base import (
     SuperUser,
     OrganizationAdministrator,
