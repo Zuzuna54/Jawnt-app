@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import accounts, payments, plaid
 from app.core.config import settings
+import uvicorn
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -26,3 +27,10 @@ app.include_router(plaid.router, prefix=settings.API_V1_STR)
 @app.get("/")
 async def root():
     return {"message": "Welcome to Jawnt API"}
+
+def start():
+    """Launched with `poetry run start` at root level"""
+    uvicorn.run("app.main:app", host="0.0.0.0", port=settings.PORT, reload=True)
+
+if __name__ == "__main__":
+    start()

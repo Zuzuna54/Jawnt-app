@@ -48,46 +48,101 @@ class PlaidService:
     def exchange_public_token(self, public_token: str) -> Dict[str, Any]:
         """Exchange public token for access token and account data"""
         try:
-            exchange_request = ItemPublicTokenExchangeRequest(
-                public_token=public_token
-            )
+            print(f"Starting token exchange process with token: {public_token[:10]}...")
+            if not public_token:
+                raise PlaidIntegrationError("Public token is required")
+
+            try:
+                print("Creating exchange request...")
+                exchange_request = ItemPublicTokenExchangeRequest(
+                    public_token=public_token
+                )
+                
+                print("Calling Plaid API to exchange token...")
+                exchange_response = self.client.item_public_token_exchange(exchange_request)
+                access_token = exchange_response['access_token']
+                print(f"Successfully exchanged for access token: {access_token[:10]}...")
+            except plaid.ApiException as e:
+                print(f"Plaid API error during token exchange: {str(e)}")
+                print(f"Error code: {getattr(e, 'code', 'unknown')}")
+                print(f"Error type: {getattr(e, 'type', 'unknown')}")
+                raise PlaidIntegrationError(f"Failed to exchange token: {str(e)}")
+            except KeyError as e:
+                print(f"Unexpected response format: {exchange_response}")
+                raise PlaidIntegrationError(f"Invalid response format: missing {str(e)}")
             
-            exchange_response = self.client.item_public_token_exchange(exchange_request)
-            access_token = exchange_response['access_token']
-            
-            # Store access token in memory (in production this should be encrypted and stored in a secure database)
+            # Store access token in memory
             if not hasattr(self, 'access_tokens'):
                 self.access_tokens = {}
             self.access_tokens[access_token] = {
                 'created_at': time.time(),
                 'item_id': exchange_response['item_id']
             }
+            print("Access token stored in memory")
             
-            # Get account details
-            accounts_response = self.client.accounts_get({
-                'access_token': access_token
-            })
-            
-            # Get auth details for account and routing numbers
-            auth_response = self.client.auth_get({
-                'access_token': access_token
-            })
+            try:
+                print("Fetching account details...")
+                accounts_response = self.client.accounts_get({
+                    'access_token': access_token
+                })
+                print(f"Retrieved {len(accounts_response['accounts'])} accounts")
+                
+                print("Fetching auth details...")
+                auth_response = self.client.auth_get({
+                    'access_token': access_token
+                })
+                print(f"Retrieved auth details for {len(auth_response['numbers']['ach'])} accounts")
+            except plaid.ApiException as e:
+                print(f"Plaid API error during data fetch: {str(e)}")
+                print(f"Error code: {getattr(e, 'code', 'unknown')}")
+                print(f"Error type: {getattr(e, 'type', 'unknown')}")
+                raise PlaidIntegrationError(f"Failed to fetch account details: {str(e)}")
+            except KeyError as e:
+                print(f"Unexpected response format in accounts/auth: {str(e)}")
+                if 'accounts_response' in locals():
+                    print(f"Accounts response: {accounts_response}")
+                if 'auth_response' in locals():
+                    print(f"Auth response: {auth_response}")
+                raise PlaidIntegrationError(f"Invalid response format: missing {str(e)}")
             
             # Combine account and auth data
             accounts = accounts_response['accounts']
             for account in accounts:
-                for auth_account in auth_response['numbers']['ach']:
-                    if account['account_id'] == auth_account['account_id']:
+                account_id = account['account_id']
+                print(f"Processing account {account_id}")
+                account_type = account.get('type', 'unknown')
+                account_subtype = account.get('subtype', 'unknown')
+                print(f"Account type: {account_type}, subtype: {account_subtype}")
+                print(f"Raw account data: {account}")
+                
+                # Find matching auth details
+                auth_numbers = auth_response.get('numbers', {}).get('ach', [])
+                print(f"Available auth details: {auth_numbers}")
+                
+                for auth_account in auth_numbers:
+                    if account_id == auth_account['account_id']:
                         account['account_number'] = auth_account['account']
                         account['routing_number'] = auth_account['routing']
+                        print(f"Added auth details to account {account_id}")
                         break
+                else:
+                    print(f"No auth details found for account {account_id}")
+                    # Set default values if no auth details found
+                    account['account_number'] = '0000'
+                    account['routing_number'] = '0000'
             
             return {
                 'access_token': access_token,
                 'accounts': accounts
             }
+        except PlaidIntegrationError:
+            raise
         except Exception as e:
-            raise PlaidIntegrationError(f"Failed to exchange public token: {str(e)}")
+            print(f"Unexpected error in exchange_public_token: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
+            raise PlaidIntegrationError(f"Unexpected error: {str(e)}")
 
 # Global Plaid service instance
 plaid_service = PlaidService() 

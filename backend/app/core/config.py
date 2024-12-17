@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Jawnt Banking API"
     VERSION: str = "1.0.0"
+    PORT: int = 8001  # Added port configuration
     
     # Plaid Settings
     PLAID_CLIENT_ID: str = "6758563294bbe4001b5c5279"
